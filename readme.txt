@@ -31,3 +31,26 @@ func (adapter *blob) SetDiscoveryFilter(uuids ...string) error {
 3---整理自己的mcube流程
 第二次就会失败
 找到2个设备 没有移除掉吗?
+
+主动冲洗/不主动冲洗
+关注bluetoothctl
+[DEL] Device D7:5F:3B:4B:EC:66 M_IZAR_SH1 过一会自动打印出来
+好像跟我的操作没有关系!!
+思路1
+https://stackoverflow.com/questions/57986883/bluez-removing-bonding-with-ble-device-does-not-work
+
+思路2
+但是tinyGo全部冲洗可以的
+err = a.adapter.RemoveDevice(dev.Path())
+不理解
+
+思路3
+当前代码
+adapter是什么?其实是 *blob
+adapter.Conn().Close()
+不理解
+
+思路4
+误打误撞成功了
+当前百发百中记录一下
+就是dbus要重新打开一次 好像
