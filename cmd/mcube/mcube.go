@@ -13,6 +13,7 @@ var uuid string = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
 
 func main() {
 	count := 0
+
 	for {
 		count++
 		log.Printf("count=%d\r\n", count)
@@ -22,7 +23,26 @@ func main() {
 		}
 		//conn.Print(os.Stdout)
 
-		device, err := conn.Discover(0, "", uuid)
+		//获得适配器 + 获得设备 方式1
+		adapter, err := conn.GetAdapter()
+		if err != nil {
+			log.Fatal(err)
+		}
+	LOOP:
+		err = adapter.Discover(time.Second, uuid)
+		if err != nil {
+			goto LOOP
+			log.Fatal(err)
+		}
+		err = conn.Update()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		device, err := conn.GetDeviceByUUID(uuid)
+
+		//获得设备 方式1的打包即这句话
+		//	device, err := conn.Discover(0, "", uuid)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -55,10 +75,8 @@ func main() {
 		}
 
 		//去冲洗
-		adapter, err := conn.GetAdapter()
 		adapter.Print(os.Stdout)
 		adapter.RemoveDevice(device)
-
 		time.Sleep(time.Second)
 	}
 }
