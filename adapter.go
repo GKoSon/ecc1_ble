@@ -37,7 +37,12 @@ type Adapter interface {
 
 // GetAdapter finds an Adapter in the object cache and returns it.
 func (conn *Connection) GetAdapter() (Adapter, error) {
-	return conn.findObject(adapterInterface, func(_ *blob) bool { return true })
+	return conn.findObject(adapterInterface, func(koson *blob) bool {
+		if koson.path == "/org/bluez/hci1" {
+			return true
+		}
+		return false
+	})
 }
 
 func (adapter *blob) StartDiscovery() error {
@@ -46,11 +51,13 @@ func (adapter *blob) StartDiscovery() error {
 }
 
 func (adapter *blob) StopDiscovery() error {
-	log.Printf("%s: stopping discovery", adapter.Name())
-	return adapter.call("StopDiscovery")
+	log.Printf("%s: stopping discovery 1", adapter.Name())
+	adapter.call("StopDiscovery")
+	log.Printf("%s: stopping discovery 2", adapter.Name())
+	return nil
 }
 
 func (adapter *blob) RemoveDevice(device Device) error {
-	log.Printf("%s: removing device %s", adapter.Name(), device.Name())
+	log.Printf("%s: removing device %s-%s", adapter.Name(), device.Name(), device.Path())
 	return adapter.call("RemoveDevice", device.Path())
 }
